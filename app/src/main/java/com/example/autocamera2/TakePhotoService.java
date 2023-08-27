@@ -491,12 +491,10 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
 
         // Adding ISO & exposure time
         exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
-
         exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
 
         // Save the changes to the image file
         exifInterface.saveAttributes();
-
         Log.d("EXIF", "EXIF data added successfully!");
     } catch (FileNotFoundException f) {
         Log.e("FileNotFound","Error searching for file"+f.getMessage());
