@@ -435,7 +435,7 @@ public class TakePhotoService extends Service {
             flag = "ALARM";
         }
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd(HH-mm-ss)", Locale.US).format(new Date());
-        String exposureStr = String.valueOf(exposure);
+        String exposureStr = String.valueOf(exposure/SEC_TO_MILLI*SEC_TO_MILLI);
         String isoStr =String.valueOf(iso);
         String imageName = flag + "_green(" + greenValue(bitmapImage) +")"+  timeStamp +"exposure("+ exposureStr +")iso("+ isoStr +").jpg";
         String imageDescription = "greenValue image";
@@ -495,7 +495,7 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
 
         // Adding exposure time information
-        exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
+        exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure/SEC_TO_MILLI*SEC_TO_MILLI));
 
         // Save the changes to the image file
         exifInterface.saveAttributes();
