@@ -16,7 +16,7 @@
             android:defaultValue="Default"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
-            android:dialogMessage="Set the ISO level. Type 'Default' for selecting default iso level."/>
+            android:dialogMessage="Set the ISO level(200-3200). Type 'Default' for selecting default iso level."/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Storage Settings">

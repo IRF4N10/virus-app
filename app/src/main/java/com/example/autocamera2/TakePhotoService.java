@@ -374,8 +374,6 @@ public class TakePhotoService extends Service {
                 Log.d(TAG, "Default ISO: " + isoRange);
                 ISO = -1;
             }
-            showToast("iso value low- high "+isoRange.getLower()+"   "+ isoRange.getUpper());
-
             return ISO;
         } catch (CameraAccessException e) {
             throw new RuntimeException(e);
