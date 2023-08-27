@@ -467,6 +467,7 @@ public class TakePhotoService extends Service {
             if (d_imagePath != null) {
                 Uri imageUri = Uri.parse(d_imagePath);
                 curStorage += new File(getPathFromUri(imageUri)).length();
+                addExifData(imageUri,exposureS,iso);
             }
         }
     }
