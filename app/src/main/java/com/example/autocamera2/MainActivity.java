@@ -1,5 +1,6 @@
 package com.example.autocamera2;
 
+
 import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
@@ -34,6 +35,7 @@ import android.widget.ToggleButton;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import java.util.Collections;
 
@@ -43,6 +45,8 @@ import java.util.Collections;
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "mainActivity";
     private static final int REQUEST_CAMERA_PERMISSION = 200;
+    private static final int REQUEST_STORAGE_PERMISSION = 1;
+
     public static final int SECOND_TO_MILLI = 1000;
     public static boolean frontBack;
     private TakePhotoService mService;
@@ -78,6 +82,18 @@ public class MainActivity extends AppCompatActivity {
                     Manifest.permission.CAMERA,
                     Manifest.permission.WRITE_EXTERNAL_STORAGE
             }, REQUEST_CAMERA_PERMISSION);
+        }
+        // Check if permission is not granted
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED ||
+                ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+            // Request the permissions
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE},
+                    REQUEST_STORAGE_PERMISSION);
+        } else {
+            // Permission is already granted, you can proceed with your code here
         }
         //bind to service
         Intent mIntent = new Intent(MainActivity.this, TakePhotoService.class);
@@ -294,6 +310,7 @@ public class MainActivity extends AppCompatActivity {
      */
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == REQUEST_CAMERA_PERMISSION) {
             if (grantResults[0] == PackageManager.PERMISSION_DENIED) {
                 Toast.makeText(MainActivity.this, "Sorry!!!, you can't use this app without granting permission", Toast.LENGTH_LONG).show();

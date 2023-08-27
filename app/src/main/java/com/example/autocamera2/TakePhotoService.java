@@ -90,7 +90,6 @@ public class TakePhotoService extends Service {
     private Rect detectArea;
     private long curStorage;
 
-    private static final int REQUEST_STORAGE_PERMISSION = 1;
 
     @Override
     public void onCreate() {
@@ -105,7 +104,6 @@ public class TakePhotoService extends Service {
         curStorage = checkStorage();
         alarmThreshHold = 0;
         //prevImg = null;
-        // Check if permission is not granted
     }
 
     @Nullable
@@ -475,35 +473,6 @@ public class TakePhotoService extends Service {
         }
     }
 
-//    private void addExifData(Uri imageUri, long exposure, long iso) {
-//        try {
-//            String imagePath = getPathFromUri(imageUri);
-//
-//
-//            showToast(imagePath);
-//            ExifInterface exifInterface = new ExifInterface(imagePath);
-//
-//
-//            // Adding ISO information
-//            exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
-//
-//            // Adding exposure time information
-//            exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
-//
-//            // Save the changes to the image file
-//            exifInterface.saveAttributes();
-//
-//            showToast("Exif added");
-//            Log.d("EXIF", "EXIF data added successfully!");
-//
-//        }
-//        catch (FileNotFoundException f){
-//        showToast("File e pai na");
-//    }catch (Exception e) {
-//            showToast("EXIF ERROR: " + e.getMessage());
-//        Log.e("EXIF", "\n\n\n\n\nError adding EXIF data: " + e.getMessage());
-//        }
-//    }
 private void addExifData(Uri imageUri, long exposure, long iso) {
     try {
         String imagePath = getPathFromUri(imageUri);
@@ -541,7 +510,7 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
     }
     catch (Exception e) {
         showToast("EXIF ERROR: " + e.getMessage());
-        Log.e("EXIF", "\n\n\n\n\nError adding EXIF data: " + e.getMessage());
+        Log.e("EXIF", "Error adding EXIF data: " + e.getMessage());
     }
 }
     public String getPathFromUri(Uri uri) {
