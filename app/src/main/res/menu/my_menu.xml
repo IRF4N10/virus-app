@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:title="@string/settings"
+        android:id="@+id/exposure" />
+
+    <item android:title="@string/edit_detect_area"
+        android:id="@+id/detect" />
+
+    <item android:title="@string/report_positive"
+        android:id="@+id/report_positive" />
+
+    <item android:title="@string/report_negative"
+        android:id="@+id/report_negative" />
+</menu>
