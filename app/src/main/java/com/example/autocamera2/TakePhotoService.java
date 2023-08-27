@@ -446,6 +446,7 @@ public class TakePhotoService extends Service {
 
             addExifData(imageUri,exposureS,iso);
         }
+        //Codes that were previously here.
 //        if (detectArea != null) {
 //            File detectCrop = new File(
 //                    Environment.getExternalStoragePublicDirectory(
