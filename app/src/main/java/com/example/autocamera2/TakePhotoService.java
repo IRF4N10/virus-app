@@ -433,7 +433,8 @@ public class TakePhotoService extends Service {
             flag = "ALARM";
         }
         String timeStamp = new SimpleDateFormat("yyyy-MM-dd(HH-mm-ss)", Locale.US).format(new Date());
-        String exposureStr = String.valueOf(exposure/(SEC_TO_MILLI*SEC_TO_MILLI));
+        long exposureS = exposure/(SEC_TO_MILLI*SEC_TO_MILLI);
+        String exposureStr = String.valueOf(exposureS);
         String isoStr =String.valueOf(iso);
         String imageName = flag + "_green(" + greenValue(bitmapImage) +")"+  timeStamp +"exposure("+ exposureStr +")iso("+ isoStr +").jpg";
         String imageDescription = "greenValue image";
@@ -443,7 +444,7 @@ public class TakePhotoService extends Service {
             Uri imageUri = Uri.parse(imagePath);
             curStorage += new File(getPathFromUri(imageUri)).length();
 
-            addExifData(imageUri,exposure,iso);
+            addExifData(imageUri,exposureS,iso);
         }
 //        if (detectArea != null) {
 //            File detectCrop = new File(
@@ -474,7 +475,6 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
     try {
         String imagePath = getPathFromUri(imageUri);
 
-
         if (imagePath == null) {
             showToast("Image path is null");
             return;
@@ -492,7 +492,7 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         // Adding ISO & exposure time
         exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
 
-        exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure/(SEC_TO_MILLI*SEC_TO_MILLI)));
+        exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
 
         // Save the changes to the image file
         exifInterface.saveAttributes();
