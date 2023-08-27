@@ -282,7 +282,6 @@ public class TakePhotoService extends Service {
                 @Override
                 public void onCaptureCompleted(CameraCaptureSession session, CaptureRequest request, TotalCaptureResult result) {
                     super.onCaptureCompleted(session, request, result);
-                    showToast("Saved to:" + file);
                     Intent intent = new Intent(INTENT_FILTER);
                     sendBroadcast(intent);
                 }
@@ -490,8 +489,6 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
             return;
         }
 
-        showToast("Image path: " + imagePath);
-
         ExifInterface exifInterface = new ExifInterface(imagePath);
 
         // Adding ISO information
@@ -503,19 +500,18 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         // Save the changes to the image file
         exifInterface.saveAttributes();
 
-        showToast("Exif data added");
         Log.d("EXIF", "EXIF data added successfully!");
     } catch (FileNotFoundException f) {
-        showToast("File not found: " + f.getMessage());
+        Log.e("FileNotFound","Error searching for file"+f.getMessage());
     }
     catch (Exception e) {
-        showToast("EXIF ERROR: " + e.getMessage());
         Log.e("EXIF", "Error adding EXIF data: " + e.getMessage());
     }
 }
     public String getPathFromUri(Uri uri) {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
+        assert cursor != null;
         int columnIndex = cursor.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
         cursor.moveToFirst();
         String filePath = cursor.getString(columnIndex);
