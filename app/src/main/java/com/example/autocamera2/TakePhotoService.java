@@ -562,6 +562,7 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         green /= totalPix;
         red /= totalPix;
         blue /= totalPix;
+        showToast("Green:"+green+", Red:"+red+", Blue:"+blue);
         if (green > alarmThreshHold && red < 200 && blue < 200) {
             playAlarm();
             broadcastResult(true);
