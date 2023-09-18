@@ -503,7 +503,6 @@ public class TakePhotoService extends Service {
         matrix.postRotate(angle);
         return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
     }
-
     /**
      * Calculate the average of green components in the image
      * @param image source bitmap
