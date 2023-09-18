@@ -12,7 +12,7 @@
             android:dialogMessage="Set the exposure time in milliseconds. Type 'Default' for the default exposure time."/>
         <EditTextPreference
             android:key="ISO level"
-            android:title="ISO level"
+            android:title="ISO Speed"
             android:defaultValue="Default"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
