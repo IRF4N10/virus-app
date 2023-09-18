@@ -2,10 +2,8 @@ package com.example.autocamera2;
 
 import android.Manifest;
 import android.app.Service;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
@@ -15,7 +13,6 @@ import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
 import android.graphics.Rect;
-import android.hardware.Camera;
 import android.hardware.camera2.CameraAccessException;
 import android.hardware.camera2.CameraCaptureSession;
 import android.hardware.camera2.CameraCharacteristics;
@@ -32,7 +29,6 @@ import android.media.ImageReader;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Binder;
-import android.os.Build;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -50,16 +46,12 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.core.app.ActivityCompat;
-import androidx.core.content.ContextCompat;
 import androidx.preference.PreferenceManager;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
 import java.nio.ByteBuffer;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -252,7 +244,6 @@ public class TakePhotoService extends Service {
                 setIso(captureBuilder, (int) iso); // Set ISO value
             }
 
-
             ImageReader.OnImageAvailableListener readerListener = reader -> {
                 try (Image image = reader.acquireLatestImage()) {
 
@@ -296,7 +287,6 @@ public class TakePhotoService extends Service {
                         e.printStackTrace();
                     }
                 }
-
                 @Override
                 public void onConfigureFailed(@NonNull CameraCaptureSession cameraCaptureSession) {
 
@@ -345,7 +335,7 @@ public class TakePhotoService extends Service {
     }
     private long getISO() {
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
-        String limit = prefs.getString("ISO level", "Default");
+        String limit = prefs.getString("ISO Speed", "default");
         long ISO;
         String mCameraId = null;
         CameraManager cameraManager = (CameraManager) getSystemService(CAMERA_SERVICE);
@@ -432,79 +422,32 @@ public class TakePhotoService extends Service {
         if (result) {
             flag = "ALARM";
         }
-        String timeStamp = new SimpleDateFormat("yyyy-MM-dd(HH-mm-ss)", Locale.US).format(new Date());
-        long exposureS = exposure/(SEC_TO_MILLI*SEC_TO_MILLI);
-        String exposureStr = String.valueOf(exposureS);
-        String isoStr =String.valueOf(iso);
-        String imageName = flag + "_green(" + greenValue(bitmapImage) +")"+  timeStamp +"exposure("+ exposureStr +")iso("+ isoStr +").jpg";
+        String time = new SimpleDateFormat("(HH-mm-ss)", Locale.US).format(new Date());
+        String date = new SimpleDateFormat("(yyyy-MM-dd)", Locale.US).format(new Date());
+
+        double exposureS = (double)exposure/(SEC_TO_MILLI*SEC_TO_MILLI*SEC_TO_MILLI);
+        String imageName = flag + "_green(" + greenValue(bitmapImage) +")_time"+ time+"_date"+date+".jpg";
         String imageDescription = "greenValue image";
         String imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), bitmapImage, imageName, imageDescription);
-        showToast("Saved to:" + imagePath);
+        showToast("saved : " + imagePath);
         if (imagePath != null) {
             Uri imageUri = Uri.parse(imagePath);
             curStorage += new File(getPathFromUri(imageUri)).length();
-
-            addExifData(imageUri,exposureS,iso);
+            addEXIFData(imageUri,exposureS,iso);
         }
-        //Codes that were previously here.
-//        if (detectArea != null) {
-//            File detectCrop = new File(
-//                    Environment.getExternalStoragePublicDirectory(
-//                            Environment.DIRECTORY_PICTURES
-//                    ).getAbsolutePath() + "/" + flag + greenValue(bitmapImage) + "greenValue" +  timeStamp + "detectCrop.jpg");
-//            try (OutputStream output = new FileOutputStream(detectCrop)) {
-//                Bitmap detect = Bitmap.createBitmap(bitmapImage, detectArea.left, detectArea.top, detectArea.width(), detectArea.height());
-//                detect.compress(Bitmap.CompressFormat.JPEG, 100, output);
-//                curStorage += detectCrop.length();
-//                output.flush();
-//            }
-//        }
 
         if (detectArea != null) {
             Bitmap detect = Bitmap.createBitmap(bitmapImage, detectArea.left, detectArea.top, detectArea.width(), detectArea.height());
-            String d_imageName = flag + "_green(" + greenValue(bitmapImage) +")"+  timeStamp +"exposure("+ exposureStr +")iso("+ isoStr +").jpg";
-            String d_imageDescription = "Cropped image";
+            String d_imageName = flag + "_green(" + greenValue(bitmapImage) +")_time"+ time+"_date"+date+".jpg";
+            String d_imageDescription = "cropped image";
             String d_imagePath = MediaStore.Images.Media.insertImage(getContentResolver(), detect, d_imageName, d_imageDescription);
             if (d_imagePath != null) {
                 Uri imageUri = Uri.parse(d_imagePath);
                 curStorage += new File(getPathFromUri(imageUri)).length();
-                addExifData(imageUri,exposureS,iso);
+                addEXIFData(imageUri,exposureS,iso);
             }
         }
     }
-
-private void addExifData(Uri imageUri, long exposure, long iso) {
-    try {
-        String imagePath = getPathFromUri(imageUri);
-
-        if (imagePath == null) {
-            showToast("Image path is null");
-            return;
-        }
-
-        File imageFile = new File(imagePath);
-
-        if (!imageFile.exists()) {
-            showToast("Image file does not exist");
-            return;
-        }
-
-        ExifInterface exifInterface = new ExifInterface(imagePath);
-
-        // Adding ISO & exposure time
-        exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
-        exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
-
-        // Save the changes to the image file
-        exifInterface.saveAttributes();
-        Log.d("EXIF", "EXIF data added successfully!");
-    } catch (FileNotFoundException f) {
-        Log.e("FileNotFound","Error searching for file"+f.getMessage());
-    }
-    catch (Exception e) {
-        Log.e("EXIF", "Error adding EXIF data: " + e.getMessage());
-    }
-}
     public String getPathFromUri(Uri uri) {
         String[] projection = { MediaStore.Images.Media.DATA };
         Cursor cursor = getContentResolver().query(uri, projection, null, null, null);
@@ -514,6 +457,38 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         String filePath = cursor.getString(columnIndex);
         cursor.close();
         return filePath;
+    }
+    /*exif info adding*/
+    private void addEXIFData(Uri imageUri, double exposure, long iso) {
+        try {
+            String imagePath = getPathFromUri(imageUri);
+
+            if (imagePath == null) {
+                showToast("Image path is null");
+                return;
+            }
+            File imageFile = new File(imagePath);
+
+            if (!imageFile.exists()) {
+                showToast("Image file does not exist");
+                return;
+            }
+
+            ExifInterface exifInterface = new ExifInterface(imagePath);
+
+            // Adding ISO & exposure time
+            exifInterface.setAttribute(ExifInterface.TAG_EXPOSURE_TIME, String.valueOf(exposure));
+            exifInterface.setAttribute(ExifInterface.TAG_ISO_SPEED_RATINGS, String.valueOf(iso));
+
+            // Save the changes to the image file
+            exifInterface.saveAttributes();
+            Log.d("EXIF", "EXIF data added successfully!");
+        } catch (FileNotFoundException f) {
+            Log.e("FileNotFound","Error searching for file"+f.getMessage());
+        }
+        catch (Exception e) {
+            Log.e("EXIF", "Error adding EXIF data: " + e.getMessage());
+        }
     }
 
     /**
@@ -562,7 +537,7 @@ private void addExifData(Uri imageUri, long exposure, long iso) {
         green /= totalPix;
         red /= totalPix;
         blue /= totalPix;
-        showToast("Green:"+green+", Red:"+red+", Blue:"+blue);
+        showToast( "red : "+red+" - green : "+green+" - blue : "+blue);
         if (green > alarmThreshHold && red < 200 && blue < 200) {
             playAlarm();
             broadcastResult(true);

@@ -6,17 +6,17 @@
         <EditTextPreference
             android:key="Exposure Time"
             android:title="Exposure Time"
-            android:defaultValue="Default"
+            android:defaultValue="default"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
-            android:dialogMessage="Set the exposure time in milliseconds. Type 'Default' for the default exposure time."/>
+            android:dialogMessage="set exposure time in milliseconds\ntype 'default' for selecting default exposure time"/>
         <EditTextPreference
-            android:key="ISO level"
+            android:key="ISO Speed"
             android:title="ISO Speed"
-            android:defaultValue="Default"
+            android:defaultValue="default"
             app:useSimpleSummaryProvider="true"
             android:persistent="true"
-            android:dialogMessage="Set the ISO speed. Type 'Default' for selecting default iso level."/>
+            android:dialogMessage="set iso speed in numbers\ntype 'default' for selecting default iso speed"/>
     </PreferenceCategory>
 
     <PreferenceCategory app:title="Storage Settings">
